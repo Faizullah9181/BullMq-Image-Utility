@@ -5,7 +5,7 @@ import { ReplicationOptions, ConnectionOptions } from "sequelize/types";
 require("dotenv").config();
 let options = {} as SequelizeOptions;
 options.database = process.env.DB_NAME;
-options.models = [path.join(__dirname, "/app/models")];
+options.models = [path.join(__dirname, "../app/models")];
 options.dialect = "mysql";
 options.logging = console.log;
 options.operatorsAliases = {

@@ -30,7 +30,7 @@ const path = __importStar(require("path"));
 require("dotenv").config();
 let options = {};
 options.database = process.env.DB_NAME;
-options.models = [path.join(__dirname, "/app/models")];
+options.models = [path.join(__dirname, "../app/models")];
 options.dialect = "mysql";
 options.logging = console.log;
 options.operatorsAliases = {
