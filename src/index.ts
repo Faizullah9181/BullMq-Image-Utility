@@ -1,11 +1,8 @@
-import express, { Express, Request, Response } from "express";
+import express, { Express, Router } from "express";
 import { ConnectDb } from "./db/db.connect";
 const app: Express = express();
 const port = process.env.PORT || 3000;
-
-app.get("/", (req: Request, res: Response) => {
-  res.send("Express + TypeScript Server");
-});
+import userRoutes from "./app/routes/user.routes";
 
 ConnectDb()
   .then(() => {
@@ -18,3 +15,9 @@ ConnectDb()
   .catch((err) => {
     console.error("Database Error: ", err);
   });
+
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+
+//routes
+app.use(userRoutes);
