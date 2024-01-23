@@ -1,13 +1,16 @@
 import { BullService } from "../../../common/bull.service";
 import cloudinaryService from "../../../common/cloudinary.service";
 import mediaRepository from "../../../repository/media.repository";
-class MediaService extends BullService {
+import { IMediaData } from "./interface";
+
+class MediaService extends BullService<IMediaData> {
   constructor() {
     super("media-upload");
     this.start();
   }
 
-  async processJob(imagePath: string, userId: string) {
+  async processJob(data: IMediaData) {
+    const { imagePath, userId } = data;
     console.log("Image upload job started");
     const result: any = await cloudinaryService.uploadImage(imagePath);
     const mediaData = {
@@ -20,10 +23,12 @@ class MediaService extends BullService {
     }
     await mediaRepository.createMedia(mediaData);
     console.log("Image upload job completed");
+
+    await this.stop();
   }
 
   async processMedia(imagePath: string, userId: number) {
-    this.addToQueue({ imagePath, userId });
+    this.addToQueue({ imagePath, userId }, 3);
   }
 }
 
