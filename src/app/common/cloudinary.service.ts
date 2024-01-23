@@ -11,9 +11,11 @@ class CloudinaryService {
     });
   }
 
-  async uploadImage(image: string) {
+  async uploadImage(image: any) {
     try {
-      const result = await cloudinary.v2.uploader.upload(image);
+      const result = await cloudinary.v2.uploader.upload(image, {
+        resource_type: "auto",
+      });
       return result;
     } catch (error) {
       return error;

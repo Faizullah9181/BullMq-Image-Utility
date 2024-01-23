@@ -1,21 +1,22 @@
 import { Queue, Worker } from "bullmq";
 import redisService from "./redis.service";
-import cloudinaryService from "./cloudinary.service";
 
-class BullService {
-  private queue: Queue;
-  private worker: Worker;
+export abstract class BullService {
+  protected queue: Queue;
+  protected worker: Worker;
+  protected queueName: string;
 
-  constructor() {
-    this.queue = new Queue("image-upload", {
+  constructor(queueName: string) {
+    this.queueName = queueName;
+    this.queue = new Queue(this.queueName, {
       connection: redisService.redisInstance,
     });
 
     this.worker = new Worker(
-      "image-upload",
+      this.queueName,
       async (job) => {
         const { imagePath, userId } = job.data;
-        await cloudinaryService.uploadImage(imagePath);
+        await this.processJob(imagePath, userId);
       },
       {
         connection: redisService.redisInstance,
@@ -23,16 +24,29 @@ class BullService {
     );
 
     this.worker.on("failed", (job: any, err: Error) => {
-      console.error(`Image upload job failed for job ${job.id}:`, err);
+      this.handleFailedJob(job, err);
     });
   }
 
+  abstract processJob(imagePath: string, userId: string): Promise<void>;
+
+  handleFailedJob(job: any, err: Error) {
+    console.error(`Job failed for job ${job.id}:`, err);
+  }
+
   async start() {
-    console.log("Bull Service Started");
+    console.log(`BullService  Started`);
     if (await this.queue.count()) {
       await this.worker.run();
     }
   }
-}
 
-export default new BullService();
+  addToQueue(data: any) {
+    this.queue.add(this.queueName, data);
+  }
+
+  async stop() {
+    await this.queue.close();
+    await this.worker.close();
+  }
+}

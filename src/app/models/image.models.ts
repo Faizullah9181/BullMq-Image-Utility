@@ -15,12 +15,6 @@ export default class Media extends Model<Media> {
   })
   image: string;
 
-  @Column({
-    type: DataType.STRING,
-    allowNull: false,
-  })
-  email: string;
-
   @ForeignKey(() => User)
   @Column({
     type: DataType.INTEGER,
