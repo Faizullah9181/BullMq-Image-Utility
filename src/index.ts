@@ -3,6 +3,7 @@ import { ConnectDb } from "./db/db.connect";
 const app: Express = express();
 const port = process.env.PORT || 3000;
 import userRoutes from "./app/routes/user.routes";
+import bullService from "./app/common/bull.service";
 
 ConnectDb()
   .then(() => {
@@ -21,3 +22,6 @@ app.use(express.urlencoded({ extended: true }));
 
 //routes
 app.use(userRoutes);
+
+//start bull service
+bullService.start();
