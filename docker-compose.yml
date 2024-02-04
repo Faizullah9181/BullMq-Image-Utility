@@ -10,6 +10,16 @@ services:
     depends_on:
       - mysql
       - redis
+    environment:
+      MYSQL_HOST: mysql
+      MYSQL_PORT: 3306
+      MYSQL_USER: myuser
+      MYSQL_PASSWORD: mypassword
+      MYSQL_DATABASE: mydb
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      REDIS_PASSWORD: mypass
+      REDIS_USER: default
 
   mysql:
     image: mysql:latest
@@ -21,6 +31,7 @@ services:
 
   redis:
     image: redis:latest
+    command: redis-server --requirepass mypass --bind 0.0.0.0
     environment:
       REDIS_HOST: localhost
       REDIS_PORT: 6379
